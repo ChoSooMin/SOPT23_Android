@@ -5,19 +5,45 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import kotlinx.android.synthetic.main.fragment_my.*
 
 class MyFragment : Fragment() {
+
+    var title : String? = null
+    var content : String? = null
 
     // Singleton??
     companion object {
         private var instance : MyFragment? = null
+
         @Synchronized
         fun getInstance(title : String, content : String) : MyFragment {
             if (instance == null) {
-                instance = MyFragment()
+                instance = MyFragment().apply {
+                    arguments = Bundle().apply {
+                        putString("title", title)
+                        putString("content", content)
+                    }
+                }
+
+                // apply 안쓰면
+//                instance = MyFragment()
+//                instance!!.arguments = Bundle()
+//                instance!!.arguments!!.putString("title", title)
+//                instance!!.arguments!!.putString("content", content)
             }
 
             return instance!!
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        // 이게 모징,,,
+        arguments?.let {
+            title = it.getString("title")
+            content = it.getString("content")
         }
     }
 
@@ -25,5 +51,13 @@ class MyFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_my, container, false)
 
         return view
+    }
+
+    // 데이터를 뷰에 적용
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+
+        tv_my_fragment_title.text = title
+        tv_my_fragment_content.text = content
     }
 }
